@@ -1,0 +1,51 @@
+on: [push]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    
+    - uses: azure/docker-login@v1
+      with:
+        login-server: eur1ap1edpternaryacr.azurecr.io
+        username: ${{ secrets.acr_eur1ap1edpternaryacr_username }}
+        password: ${{ secrets.acr_eur1ap1edpternaryacr_password }}
+    
+    - name: Build and push image to ACR
+      id: build-image
+      run: |
+        docker build "$GITHUB_WORKSPACE/all-spark-notebook" -f  "all-spark-notebook/Dockerfile" -t eur1ap1edpternaryacr.azurecr.io/eur1ap1rapidfeestk8:${{ github.sha }} --label dockerfile-path=all-spark-notebook/Dockerfile
+        docker push eur1ap1edpternaryacr.azurecr.io/eur1ap1rapidfeestk8:${{ github.sha }}
+    
+    - uses: azure/k8s-set-context@v1
+      with:
+         kubeconfig: ${{ secrets.aks_eur1ap1rapidfeestk8_kubeConfig }}
+      id: login
+    
+    - name: Create namespace
+      run: |
+        namespacePresent=`kubectl get namespace | grep eur1-ap1-rapid-feestk89135 | wc -l`
+        if [ $namespacePresent -eq 0 ]
+        then
+            echo `kubectl create namespace eur1-ap1-rapid-feestk89135`
+        fi
+
+    - uses: azure/k8s-create-secret@v1
+      with:
+        namespace: eur1-ap1-rapid-feestk89135
+        container-registry-url: eur1ap1edpternaryacr.azurecr.io
+        container-registry-username: ${{ secrets.acr_eur1ap1edpternaryacr_username }}
+        container-registry-password: ${{ secrets.acr_eur1ap1edpternaryacr_password }}
+        secret-name: eur1ap1rapiddockerauth
+       
+    - uses: azure/k8s-deploy@v1.2
+      with:
+        namespace: eur1-ap1-rapid-feestk89135
+        manifests: |
+          manifests/deployment-1.yml
+          manifests/service-1.yml
+          manifests/ingress-1.yml
+        images: |
+          eur1ap1edpternaryacr.azurecr.io/eur1ap1rapidfeestk8:${{ github.sha }}
+        imagepullsecrets: |
+          eur1ap1rapiddockerauth
