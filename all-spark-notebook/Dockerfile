@@ -13,8 +13,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
 
-
-
 # RSpark config
 ENV R_LIBS_USER "${SPARK_HOME}/R/lib"
 RUN fix-permissions "${R_LIBS_USER}"
@@ -25,10 +23,17 @@ RUN apt-get update --yes && \
     fonts-dejavu \
     gfortran \
     gcc && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    apt-get -y install unixodbc-dev libsasl2-dev gcc python-dev
+    apt-get clean && rm -rf /var/lib/apt/lists/* 
+
+#Install FreeTDS and dependencies for PyODBC 
+RUN apt-get update 
+RUN apt-get install -y tdsodbc unixodbc-dev 
+RUN apt install unixodbc -y 
+RUN apt-get clean -y 
+ADD odbcinst.ini /etc/odbcinst.ini
 
 USER ${NB_UID}
+
 
 # R packages including IRKernel which gets installed globally.
 RUN mamba install --quiet --yes \
@@ -40,9 +45,4 @@ RUN mamba install --quiet --yes \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
-
-#install Py packages
-CMD pip install soda-core-spark-df
-
-
 
