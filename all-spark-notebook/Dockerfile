@@ -6,14 +6,14 @@ FROM $BASE_CONTAINER
 
 LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"
 
-RUN chpasswd <<<"root:root" && \
-    sed -Ei 's/(.*pam_deny.so)/# \1/' /etc/pam.d/su
 
 # Fix: https://github.com/hadolint/hadolint/wiki/DL4006
 # Fix: https://github.com/koalaman/shellcheck/wiki/SC3014
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
+
+
 
 # RSpark config
 ENV R_LIBS_USER "${SPARK_HOME}/R/lib"
@@ -25,7 +25,8 @@ RUN apt-get update --yes && \
     fonts-dejavu \
     gfortran \
     gcc && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    apt-get -y install unixodbc-dev libsasl2-dev gcc python-dev
 
 USER ${NB_UID}
 
@@ -39,3 +40,9 @@ RUN mamba install --quiet --yes \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
+
+#install Py packages
+CMD pip install soda-core-spark-df
+
+
+
