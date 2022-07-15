@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: "eur1ap1rapidfeestk8-693a"
+    labels:
+        app: "eur1ap1rapidfeestk8-693a"
+spec:
+    type: ClusterIP
+    ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+    selector:
+        app: "eur1ap1rapidfeestk8-693a"
