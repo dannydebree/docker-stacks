@@ -35,6 +35,11 @@ RUN apt-get update --yes && \
     texlive-plain-generic && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+
+# Allow using 'su -' to make sandbox changes
+RUN chpasswd <<<"root:root" && \
+    sed -Ei 's/(.*pam_deny.so)/# \1/' /etc/pam.d/su
+
 # Create alternative for nano -> nano-tiny
 RUN update-alternatives --install /usr/bin/nano nano /bin/nano-tiny 10
 
