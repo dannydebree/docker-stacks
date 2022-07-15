@@ -6,6 +6,9 @@ FROM $BASE_CONTAINER
 
 LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"
 
+RUN chpasswd <<<"root:root" && \
+    sed -Ei 's/(.*pam_deny.so)/# \1/' /etc/pam.d/su
+
 # Fix: https://github.com/hadolint/hadolint/wiki/DL4006
 # Fix: https://github.com/koalaman/shellcheck/wiki/SC3014
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
