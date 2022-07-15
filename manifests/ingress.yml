@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+    name: "eur1ap1rapidfeestk8-693a"
+    labels:
+        app: "eur1ap1rapidfeestk8-693a"
+    annotations:
+        kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+    rules:
+        - host: eur1-ap1-rapid-feestk8967d-eur1ap1rapidfeestk8-693a.46546bbf8c4c48199dcc.westeurope.aksapp.io
+          http:
+            paths:
+            - path: /
+              backend:
+                serviceName: "eur1ap1rapidfeestk8-693a"
+                servicePort: 80
