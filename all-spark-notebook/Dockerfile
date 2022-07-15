@@ -31,9 +31,9 @@ RUN apt-get install -y tdsodbc unixodbc-dev
 RUN apt install unixodbc -y 
 RUN apt-get clean -y 
 ADD odbcinst.ini /etc/odbcinst.ini
+RUN apt-get install libsasl2-dev
 
 USER ${NB_UID}
-
 
 # R packages including IRKernel which gets installed globally.
 RUN mamba install --quiet --yes \
