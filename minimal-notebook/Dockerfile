@@ -43,5 +43,9 @@ RUN chpasswd <<<"root:root" && \
 # Create alternative for nano -> nano-tiny
 RUN update-alternatives --install /usr/bin/nano nano /bin/nano-tiny 10
 
-# Switch back to jovyan to avoid accidental container runs as root
-USER ${NB_UID}
+#Install FreeTDS and dependencies for PyODBC 
+RUN apt-get update 
+RUN apt-get -y install unixodbc-dev libsasl2-dev gcc python-dev 
+RUN apt install unixodbc -y
+RUN apt-get clean -y
+ADD odbcinst.ini /etc/odbcinst.ini

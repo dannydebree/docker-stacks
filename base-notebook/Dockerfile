@@ -9,7 +9,6 @@ FROM $ROOT_CONTAINER
 
 LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"
 ARG NB_USER="jovyan"
-ARG NB_PASSWORD="jovyan"
 ARG NB_UID="1000"
 ARG NB_GID="100"
 
@@ -90,7 +89,6 @@ RUN echo "auth requisite pam_deny.so" >> /etc/pam.d/su && \
     fix-permissions "${HOME}" && \
     fix-permissions "${CONDA_DIR}"
 
-USER ${NB_UID}
 
 # Pin python version here, or set it to "default"
 ARG PYTHON_VERSION=3.10
@@ -172,6 +170,5 @@ HEALTHCHECK  --interval=15s --timeout=3s --start-period=5s --retries=3 \
     http${GEN_CERT:+s}://localhost:8888${JUPYTERHUB_SERVICE_PREFIX:-/}api || exit 1
 
 # Switch back to jovyan to avoid accidental container runs as root
-USER ${NB_UID}
 
 WORKDIR "${HOME}"
