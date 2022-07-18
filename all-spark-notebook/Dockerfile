@@ -25,16 +25,6 @@ RUN apt-get update --yes && \
     gcc && \
     apt-get clean && rm -rf /var/lib/apt/lists/* 
 
-#Install FreeTDS and dependencies for PyODBC 
-RUN apt-get update 
-RUN apt-get install -y tdsodbc unixodbc-dev 
-RUN apt install unixodbc -y 
-RUN apt-get -y install unixodbc-dev libsasl2-dev gcc python-dev
-RUN apt-get install libsasl2-dev
-RUN sudo apt-get install libssl-dev
-RUN apt-get clean -y 
-ADD odbcinst.ini /etc/odbcinst.ini
-
 USER ${NB_UID}
 
 # R packages including IRKernel which gets installed globally.

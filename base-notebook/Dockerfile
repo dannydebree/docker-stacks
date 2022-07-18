@@ -9,6 +9,7 @@ FROM $ROOT_CONTAINER
 
 LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"
 ARG NB_USER="jovyan"
+ARG NB_PASSWORD="jovyan"
 ARG NB_UID="1000"
 ARG NB_GID="100"
 
@@ -47,6 +48,13 @@ RUN apt-get update --yes && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
+
+#Install FreeTDS and dependencies for PyODBC 
+RUN apt-get update 
+RUN apt-get -y install unixodbc-dev libsasl2-dev gcc python-dev 
+RUN apt install unixodbc -y
+RUN apt-get clean -y
+ADD odbcinst.ini /etc/odbcinst.ini
 
 # Configure environment
 ENV CONDA_DIR=/opt/conda \
